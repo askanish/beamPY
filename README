@@ -9,7 +9,7 @@ actual draft from the sketch.
 
 This tool takes a text prefixed with appropriate sentinels and converts
 it into beamer text. This is highly customizable. A config file is 
-provided that can change the sentinels to your whim and fancies. 
+provided that can change the sentinels according to your whim and fancies. 
 
 And, accidentally, this can also be used as a clutter free environment
 ( without all the backslashes, and dollars of latex) to write a PPT 
