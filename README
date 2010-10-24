@@ -1,0 +1,41 @@
+A Python program to convert a text into PPT using beamer(LaTeX).
+
+Ideally, people when they are preparing for a presentation they make 
+a rough sketch of the entire PPT and then start putting it into main
+draft.
+
+So it struck me, Why don't we make a tool that directly gets you to the
+actual draft from the sketch. 
+
+This tool takes a text prefixed with appropriate sentinels and converts
+it into beamer text. This is highly customizable. A config file is 
+provided that can change the sentinels to your whim and fancies. 
+
+And, accidentally, this can also be used as a clutter free environment
+( without all the backslashes, and dollars of latex) to write a PPT 
+in beamer.
+
+Usage
+-----
+Please use 'beambuilder -h'
+
+
+Example input Text
+------------------
+:Title1
+--Level1-point1
+;;Level2-p1
+;;Level2-p2
+;;Level2-p3
+--Level1-point2
+--Level1-point3
+
+Config File
+----------
+The fields in the config file _must_ be present. It gives the author name 
+and sentinels for the program.
+
+author = Anish Kumar S
+title = :
+level1 = --
+level2 = ;;
