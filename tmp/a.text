@@ -1,0 +1,25 @@
+\documentclass{beamer}
+
+\title{A Tiny Example}
+\author{Andrew Mertz and William Slough}
+\date{June 15, 2005}
+\usetheme{Copenhagen}
+
+\begin{document}
+\maketitle
+
+\begin{frame}
+\frametitle{  title }
+	\begin{itemize}
+		\item   point 1 
+		\item   point 2 
+		\begin{itemize}
+			\item   abcd 
+			\item   efg 
+		\end{itemize}
+		\item   point 3  
+		\item   point 4 
+	\end{itemize}
+\end{frame}
+
+\end{document}

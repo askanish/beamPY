@@ -1,0 +1,130 @@
+#! /usr/bin/python
+
+import re
+import os, os.path
+
+import sys
+import getopt
+
+title_regex = ":"
+l1_regex = "--"
+l2_regex = ";;"
+author = ""
+
+env = os.getenv("HOME")
+config_file = env+'/.beam.conf'
+
+def print_head(title):
+	print "\\documentclass{beamer}\n\n",
+
+	print "\\title{A Tiny Example}\n",
+	print "\\author{",author,"}\n",
+	print "\\date{June 15, 2005}\n",
+	print "\\usetheme{Copenhagen}\n\n",
+	print "\\begin{document}\n",
+	print "\\maketitle\n\n",
+
+def parse(file):
+
+	frame_start = 0
+	level1_start = 0
+	level2_start = 0
+
+	if not os.path.exists(file):
+		print "Error, wrong file name argument\n",
+		usage()
+		sys.exit(2)
+
+	f = open(file, 'r')
+	print_head("Anish S Kumar")
+	for lines in f:
+		txt = re.match(title_regex+"[a-zA-Z0-9]*",lines)
+		if txt :
+			if level2_start == 1:
+				level2_start = level2_start - 1
+				print "\t\t\\end{itemize}\n",
+			if level1_start == 1:
+				level1_start = level1_start - 1
+				print "\t\\end{itemize}\n",
+			if frame_start == 1:	
+				frame_start = frame_start - 1
+				print "\\end{frame}\n\n",
+			frame_start = frame_start + 1
+			print "\\begin{frame}\n\\frametitle{",lines.split(title_regex)[1].rstrip('\n'),"}\n",
+		#----------------------------------
+		txt = re.match(l1_regex+"[a-zA-Z0-9]*",lines)
+		if txt:
+			if level1_start != 1:
+				level1_start = level1_start + 1
+				print "\t\\begin{itemize}\n",
+			if level2_start == 1:
+				level2_start = level2_start - 1
+				print "\t\t\\end{itemize}\n",
+			for i in lines.split(l1_regex):
+				if i:
+					print "\t\t\\item ",i.rstrip('\n'),"\n",
+		
+		#----------------------------------
+		txt = re.match(l2_regex+"[a-zA-Z0-9]*",lines)
+		if txt:
+			if level2_start != 1:
+				level2_start = level2_start + 1
+				print "\t\t\\begin{itemize}\n",
+			for i in lines.split(l2_regex):
+				if i:
+					print "\t\t\t\\item ",i.rstrip('\n'),"\n",
+		
+	if level2_start == 1:
+		print "\t\t\\end{itemize}\n",
+	if level1_start == 1:
+		print "\t\\end{itemize}\n",
+	if frame_start == 1:
+		print "\\end{frame}\n\n",
+
+	print "\\end{document}\n",	
+		
+def usage():
+	print "Usage: beambuild <input file> [ -t theme_name ] [ -o output_file ] [ -c config_file ] [ -h ]\n",
+	print " input_file 	- The file to be parsed.\n",
+	print " theme_name 	- Valid beamer theme name.\n",
+	print " output_file 	- The beamer output file.\n",
+	print " config_file	- Configure the regex for parser\n",
+	print " h, help 	- Shows Usage\n",
+	
+
+try:                                
+	opts, args = getopt.getopt(sys.argv[2:], "t:o:c:", ["theme=", "output=", "config="]) 
+except getopt.GetoptError:           
+	usage()                          
+	sys.exit(2)                     
+
+for opt, arg in opts:
+	if opt in ("-t", "--theme"):
+		theme = arg
+	elif opt in ("-o","--output"):
+		out_file = arg
+	elif opt in ("-c","--config"):
+		config_file = arg
+
+
+if len(sys.argv) != 1:
+	if sys.argv[1] in ("-h","--help"):
+		usage()
+	else:
+		if not os.path.exists(config_file):
+			print "Error. Config file not found"
+			sys.exit()
+		
+		c = open(config_file,'r')
+		for line in c:
+			l=line.split('=')
+			if l[0].strip(' ') == "author":
+				author = l[1].strip('\n ')
+			elif l[0].strip(' ') == "title":
+				title_regex = l[1].strip('\n ')
+			elif l[0].strip(' ') == "level1":
+				l1_regex = l[1].strip('\n ')
+			elif l[0].strip(' ') == "level2":
+				l2_regex = l[1].strip('\n ')
+		
+		parse(sys.argv[1])
